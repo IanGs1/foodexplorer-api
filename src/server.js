@@ -1,11 +1,15 @@
 require("express-async-errors");
+const AppError = require("./utils/AppError");
+
 const express = require("express");
 
-const AppError = require("./utils/AppError");
+const appRoutes = require("./routes");
 
 const app = express();
 
 app.use(express.json());
+
+app.use(appRoutes)
 
 app.use((error, request, reply, next) => {
   if (error instanceof AppError) {

@@ -20,12 +20,6 @@ class UsersController {
       password: hashedPassword,
     });
 
-    if (userId == 1) {
-      await knex("users").where({ email }).update({
-        admin: true,
-      })
-    }
-
     return reply.status(201).json({
       id: userId,
       name,
