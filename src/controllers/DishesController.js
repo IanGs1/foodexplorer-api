@@ -10,11 +10,18 @@ class DishesController {
       throw new AppError("Esse prato já existe!", 400)
     }
 
+    let category_id;
+
+    const categoryAlreadyExists = await knex("categories").where({ name: category }).first();
+    categoryAlreadyExists ? category_id = categoryAlreadyExists.id : [category_id] = await knex("categories").insert({ name: category });
+
+    console.log(category_id);
+
     const [dish_id] = await knex("dishes").insert({
       name,
-      category,
       price,
       description,
+      category_id,
     })
 
     ingredients.map(async (ingredient) => {
@@ -31,6 +38,7 @@ class DishesController {
       ingredients,
       price,
       description,
+      category_id,
     })
   }
 }
