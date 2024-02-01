@@ -15,8 +15,6 @@ class DishesController {
     const categoryAlreadyExists = await knex("categories").where({ name: category }).first();
     categoryAlreadyExists ? category_id = categoryAlreadyExists.id : [category_id] = await knex("categories").insert({ name: category });
 
-    console.log(category_id);
-
     const [dish_id] = await knex("dishes").insert({
       name,
       price,
@@ -40,6 +38,22 @@ class DishesController {
       description,
       category_id,
     })
+  }
+
+  async index(request, reply) {
+    const categories = await knex("categories");
+    const dishes = await knex("dishes");
+
+    const dishesWithCategories = categories.map(category => {
+      const dishesWithCategories = dishes.filter(dish => dish.category_id === category.id);
+
+      return {
+        category: category.name,
+        dishes: dishesWithCategories,
+      }
+    });
+
+    return reply.status(200).json(dishesWithCategories);
   }
 }
 

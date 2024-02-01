@@ -8,6 +8,8 @@ const ensureUserAdmin = require("../middlewares/ensureUserAdmin");
 const dishRoutes = Router();
 const dishesController = new DishesController();
 
-dishRoutes.post("/", ensureAuthenticated, ensureUserAdmin, dishesController.create);
+dishRoutes.use(ensureAuthenticated);
+dishRoutes.post("/", ensureUserAdmin, dishesController.create);
+dishRoutes.get("/", dishesController.index);
 
 module.exports = dishRoutes
