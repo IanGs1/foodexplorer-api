@@ -91,6 +91,30 @@ class DishesController {
     return reply.status(200).json(filteredDishesWithCategoriesAndIngredients);
   }
 
+  async show(request, reply) {
+    const { dishId } = request.params;
+
+    const dish = await knex("dishes").where({ id: dishId }).first();
+    if (!dish) {
+      throw new AppError("Por favor, insira um ID válido!", 404);
+    }
+
+    const category = await knex("categories").where({ id: dishId });
+    const ingredients = await knex("ingredients").where({ dish_id: dishId });
+
+    return reply.status(200).json({
+      id: dish.id,
+      name: dish.name,
+      price: dish.price,
+      description: dish.description,
+      photo: dish.photo,
+      category: category[0].name,
+      ingredients,
+      created_at: dish.created_at,
+      updated_at: dish.updated_at,
+    })
+  }
+
   async update(request, reply) {
     const { name, price, description, category, ingredients } = request.body;
     const { dishId } = request.params;
@@ -120,7 +144,7 @@ class DishesController {
     if (ingredients) {
       const previousIngredients = await knex("ingredients").where({ dish_id: dishId });
       previousIngredients.map(async (ingredient) => {
-        await knex("ingredien ts").where({ id: ingredient.id }).delete();
+        await knex("ingredients").where({ id: ingredient.id }).delete();
       })
   
       ingredients.map(async (ingredient) => {
