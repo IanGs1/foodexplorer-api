@@ -47,6 +47,8 @@ class DishesController {
     if (ingredients) {
       const filterIngredients = ingredients.split(",").map(ingredient => ingredient.trim());
 
+      console.log(filterIngredients);
+
       dishes = await knex("dishes")
       .innerJoin("ingredients", "dishes.id", "ingredients.dish_id")
       .whereIn("ingredients.name", filterIngredients)
@@ -56,6 +58,7 @@ class DishesController {
       dishes = await knex("dishes")
       .whereLike("name", `%${name}%`)
       .orderBy("name");
+
     } else {
       dishes = await knex("dishes").orderBy("name");
     }
@@ -99,7 +102,7 @@ class DishesController {
       throw new AppError("Por favor, insira um ID válido!", 404);
     }
 
-    const category = await knex("categories").where({ id: dishId });
+    const [category] = await knex("categories").where({ id: dishId });
     const ingredients = await knex("ingredients").where({ dish_id: dishId });
 
     return reply.status(200).json({
@@ -108,7 +111,7 @@ class DishesController {
       price: dish.price,
       description: dish.description,
       photo: dish.photo,
-      category: category[0].name,
+      category: category.AppErrorname,
       ingredients,
       created_at: dish.created_at,
       updated_at: dish.updated_at,
