@@ -43,16 +43,25 @@ class DishesController {
   async index(request, reply) {
     const { name, ingredients } = request.query;
 
+    const allDishes = await knex("dishes");
+    const categories = await knex("categories");
+    const allIngredients = await knex("ingredients");
+
     let dishes;
     if (ingredients) {
       const filterIngredients = ingredients.split(",").map(ingredient => ingredient.trim());
 
-      console.log(filterIngredients);
-
+      // This search returns a list of ingredients with Dish properties. So, in line 60, I fix it using a map and returning a list of dishes with Dish properties
       dishes = await knex("dishes")
       .innerJoin("ingredients", "dishes.id", "ingredients.dish_id")
       .whereIn("ingredients.name", filterIngredients)
       .whereLike("dishes.name", `%${name}%`)
+
+      dishes = dishes.map(ingredientDish => {
+        const realDish = allDishes.filter(dish => dish.id === ingredientDish.dish_id);
+
+        return realDish[0];
+      })
 
     } else if (name) {
       dishes = await knex("dishes")
@@ -62,9 +71,6 @@ class DishesController {
     } else {
       dishes = await knex("dishes").orderBy("name");
     }
-
-    const categories = await knex("categories");
-    const allIngredients = await knex("ingredients");
 
     const dishesWithCategoriesAndIngredients = categories.map(category => {
       const dishesWithCategories = dishes.filter(dish => dish.category_id === category.id);
