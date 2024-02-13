@@ -4,14 +4,17 @@ require("express-async-errors");
 const AppError = require("./utils/AppError");
 
 const express = require("express");
-
 const appRoutes = require("./routes");
+
+const { UPLOAD_FOLDER } = require("./config/upload");
 
 const app = express();
 
 app.use(express.json());
 
 app.use(appRoutes)
+
+app.use("/files", express.static(UPLOAD_FOLDER));
 
 app.use((error, request, reply, next) => {
   if (error instanceof AppError) {
