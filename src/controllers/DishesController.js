@@ -41,19 +41,54 @@ class DishesController {
   }
 
   async index(request, reply) {
-    const categories = await knex("categories");
-    const dishes = await knex("dishes");
+    const { name, ingredients } = request.query;
 
-    const dishesWithCategories = categories.map(category => {
+    let dishes;
+    if (ingredients) {
+      const filterIngredients = ingredients.split(",").map(ingredient => ingredient.trim());
+
+      dishes = await knex("dishes")
+      .innerJoin("ingredients", "dishes.id", "ingredients.dish_id")
+      .whereIn("ingredients.name", filterIngredients)
+      .whereLike("dishes.name", `%${name}%`)
+
+    } else if (name) {
+      dishes = await knex("dishes")
+      .whereLike("name", `%${name}%`)
+      .orderBy("name");
+    } else {
+      dishes = await knex("dishes").orderBy("name");
+    }
+
+    const categories = await knex("categories");
+    const allIngredients = await knex("ingredients");
+
+    const dishesWithCategoriesAndIngredients = categories.map(category => {
       const dishesWithCategories = dishes.filter(dish => dish.category_id === category.id);
+
+      if (dishesWithCategories.length === 0) {
+        return;
+      }
+
+      const dishesWithIngredients = dishesWithCategories.map(dish => {
+        const filteredIngredients = allIngredients.filter(ingredient => ingredient.dish_id === dish.id);
+
+        return {
+          ...dish,
+          ingredients: filteredIngredients,
+        }
+      })
 
       return {
         category: category.name,
-        dishes: dishesWithCategories,
+        dishes: dishesWithIngredients,
       }
     });
 
-    return reply.status(200).json(dishesWithCategories);
+    // Using here the Array.prototype.reduce method to exclude null values in the dishes array
+    const filteredDishesWithCategoriesAndIngredients = dishesWithCategoriesAndIngredients.reduce((acc, dish) => dish ? [...acc, dish] : acc, [])
+
+    return reply.status(200).json(filteredDishesWithCategoriesAndIngredients);
   }
 }
 
