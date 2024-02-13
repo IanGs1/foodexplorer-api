@@ -90,6 +90,51 @@ class DishesController {
 
     return reply.status(200).json(filteredDishesWithCategoriesAndIngredients);
   }
+
+  async update(request, reply) {
+    const { name, price, description, category, ingredients } = request.body;
+    const { dishId } = request.params;
+
+    const dish = await knex("dishes").where({ id: dishId }).first();
+    if (!dish) {
+      throw new AppError("Por favor, insira um ID válido!", 404);
+    }
+
+    dish.name = name ?? dish.name
+    dish.price = price ?? dish.price
+    dish.description = description ?? dish.description
+
+    if (category) {
+      const categoryAlreadyExists = await knex("categories").where({ name: category }).first();
+      if (!categoryAlreadyExists) {
+        const [categoryId] = await knex("categories").insert({
+          name: category,
+        })
+  
+        dish.category_id = categoryId;
+      } else {
+        dish.category_id === categoryAlreadyExists.id ? dish.category_id = dish.category_id : dish.category_id = categoryAlreadyExists.id;
+      }
+    }
+
+    if (ingredients) {
+      const previousIngredients = await knex("ingredients").where({ dish_id: dishId });
+      previousIngredients.map(async (ingredient) => {
+        await knex("ingredien ts").where({ id: ingredient.id }).delete();
+      })
+  
+      ingredients.map(async (ingredient) => {
+        await knex("ingredients").insert({
+          name: ingredient,
+          dish_id: dishId,
+        })
+      })
+    }
+
+    await knex("dishes").where({ id: dishId }).update(dish);
+
+    return reply.status(200).json({ dish });
+  }
 }
 
 module.exports = DishesController;
