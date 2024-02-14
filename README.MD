@@ -14,7 +14,7 @@ O **Food Explorer** é uma aplicação Web que simula um restaurante Delivery. C
 
 Liste de pré-requisitos necessários para que o projeto seja executado com sucesso:
 
-- [Node.js](https://nodejs.org/) - Versão v18.18.0 ou superior.
+- [Node.js](https://nodejs.org/) - Versão v18.0 ou superior.
 - [npm](https://www.npmjs.com/) ou [pnpm](https://pnpm.io/pt/) - Versão 8.0 ou superior.
 
 ## 🛠️ Instalação
