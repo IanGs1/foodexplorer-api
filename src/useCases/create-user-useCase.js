@@ -15,7 +15,7 @@ class createUserUseCase {
     const user = await knex("users").insert({
       name,
       email,
-      password
+      password: passwordHash,
     }).returning("*");
 
     return user;
