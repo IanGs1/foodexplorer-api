@@ -1,6 +1,6 @@
-import path from "node:path";
+const path = require("node:path");
 
-export default {
+module.exports = {
   development: {
     client: "sqlite3",
     connection: {
