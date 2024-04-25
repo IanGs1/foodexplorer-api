@@ -1,5 +1,8 @@
 # Dependencies
 node_modules
 
+# Environment Variables
+.env
+
 # RFs X RNFs X RN
 to-do.md
