@@ -8,9 +8,8 @@ const dishRoutes = Router();
 const dishesController = new DishesController();
 
 dishRoutes.use(ensureAuthenticated);
-dishRoutes.use(ensureAdmin);
 
-dishRoutes.post("/", dishesController.create);
+dishRoutes.post("/", ensureAuthenticated, dishesController.create);
 dishRoutes.get("/:dishId", dishesController.show);
 
 module.exports = dishRoutes;
