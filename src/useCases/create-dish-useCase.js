@@ -32,8 +32,6 @@ class CreateDishUseCase {
       category: capitalizedCategory,
     }).returning("*");
 
-    console.log(dish);
-
     ingredients.forEach(async (ingredient) => {
       await knex("ingredients").insert({
         name: ingredient,

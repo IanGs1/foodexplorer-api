@@ -10,3 +10,5 @@ function ensureAdmin(request, reply, next) {
 
   return next();
 };
+
+module.exports = ensureAdmin;
