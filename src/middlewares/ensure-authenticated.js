@@ -16,10 +16,11 @@ function ensureAuthenticated(request, reply, next) {
     const [, token] = authHeader.split(' ');
 
     try {        
-        const { sub: userId } = verify(token, authConfig.secret);
+        const { sub: userId, userRole: role } = verify(token, authConfig.secret);
 
         request.user = {
             id: String(userId),
+            role,
         };
 
         next();

@@ -18,7 +18,7 @@ class SignInUserUseCase {
       throw new AppError("Email/Password is invalid!", 400);
     };
 
-    const token = sign({}, jwtConfig.secret, {
+    const token = sign({ userRole: user.role }, jwtConfig.secret, {
       subject: user.id,
       expiresIn: jwtConfig.expiresIn,
     });
