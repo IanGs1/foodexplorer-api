@@ -20,21 +20,24 @@ class CreateDishUseCase {
       throw new AppError("Category must be or 'Lanche', or 'Refeição', or 'Salada'", 400);
     };
     
-    const dishAlreadyExists = await knex("dishes").where({ name }).first();
-    if (dishAlreadyExists) {
-      throw new AppError("Dish already exists!", 400);
-    };
+    // const dishAlreadyExists = await knex("dishes").where({ name }).first();
+    // if (dishAlreadyExists) {
+    //   throw new AppError("Dish already exists!", 400);
+    // };
 
-    const dish = await knex("dishes").insert({
+    const [dish] = await knex("dishes").insert({
       name,
       description,
       price,
       category: capitalizedCategory,
     }).returning("*");
 
+    console.log(dish);
+
     ingredients.forEach(async (ingredient) => {
       await knex("ingredients").insert({
         name: ingredient,
+        dish_id: dish.id,
       });
     });
 

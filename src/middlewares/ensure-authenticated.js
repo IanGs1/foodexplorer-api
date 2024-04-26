@@ -1,7 +1,5 @@
-const { verify,  } = require('jsonwebtoken');
+const { verify } = require('jsonwebtoken');
 const authConfig = require('../config/jwt-config');
-
-const AppError = require('../utils/AppError');
 
 function ensureAuthenticated(request, reply, next) {
     const authHeader = request.headers.authorization;
@@ -9,7 +7,10 @@ function ensureAuthenticated(request, reply, next) {
     if (!authHeader) {
         console.log("JWT Token has not been informed")
 
-        throw new AppError("JWT Token has not been informed", 401);
+        return reply.status(401).json({
+            status: "Error",
+            message: "JWT Token has not been informed",
+        });
     };
 
     const [, token] = authHeader.split(' ');
