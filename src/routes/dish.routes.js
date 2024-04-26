@@ -11,5 +11,6 @@ dishRoutes.use(ensureAuthenticated);
 
 dishRoutes.post("/", ensureAuthenticated, dishesController.create);
 dishRoutes.get("/:dishId", dishesController.show);
+dishRoutes.delete("/:dishId", ensureAuthenticated, dishesController.delete);
 
 module.exports = dishRoutes;

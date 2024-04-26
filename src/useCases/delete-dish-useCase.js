@@ -1,7 +1,7 @@
 const knex = require("../database/knex");
 const AppError = require("../utils/AppError");
 
-class FindDishByIdUseCase {
+class DeleteDishUseCase {
   async execute(dishId) {
     const dish = await knex("dishes").where({ id: dishId }).first();
 
@@ -9,14 +9,10 @@ class FindDishByIdUseCase {
       throw new AppError("Please, insert a valid Dish ID", 400);
     };
 
-    const completeIngredients = await knex("ingredients").where({ dish_id: dishId });
-    const ingredients = completeIngredients.map(ingredient => ingredient.name);
+    await knex("dishes").where({ id: dishId }).delete();
 
-    return {
-      ...dish,
-      ingredients,
-    };
+    return {};
   };
 };
 
-module.exports = FindDishByIdUseCase;
+module.exports = DeleteDishUseCase;
