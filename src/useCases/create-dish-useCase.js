@@ -9,15 +9,15 @@ const acceptedCategories = {
 };
 
 class CreateDishUseCase {
-  async execute({ name, description, price, category, ingredients, price }) {
+  async execute({ name, description, category, ingredients, price }) {
     if (!Array.isArray(ingredients)) {
-      throw new AppError("Ingredients must be an array!");
+      throw new AppError("Ingredients must be an array!", 400);
     };
     
     // Verifiying if the category is on the "Category Enum"
     const capitalizedCategory = category.charAt(0).toUpperCase() + category.slice(1);
     if (!acceptedCategories[capitalizedCategory]) {
-      throw new AppError("Category must be or 'Lanche', or 'Refeição', or 'Salada'");
+      throw new AppError("Category must be or 'Lanche', or 'Refeição', or 'Salada'", 400);
     };
     
     const dishAlreadyExists = await knex("dishes").where({ name }).first();
@@ -29,7 +29,7 @@ class CreateDishUseCase {
       name,
       description,
       price,
-      capitalizedCategory,
+      category: capitalizedCategory,
     }).returning("*");
 
     ingredients.forEach(async (ingredient) => {
