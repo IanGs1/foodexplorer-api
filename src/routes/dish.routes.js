@@ -9,8 +9,9 @@ const dishesController = new DishesController();
 
 dishRoutes.use(ensureAuthenticated);
 
-dishRoutes.post("/", ensureAuthenticated, dishesController.create);
+dishRoutes.post("/", ensureAdmin, dishesController.create);
 dishRoutes.get("/:dishId", dishesController.show);
-dishRoutes.delete("/:dishId", ensureAuthenticated, dishesController.delete);
+dishRoutes.put("/:dishId", ensureAdmin, dishesController.update);
+dishRoutes.delete("/:dishId", ensureAdmin, ensureAuthenticated, dishesController.delete);
 
 module.exports = dishRoutes;

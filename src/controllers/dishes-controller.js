@@ -1,5 +1,6 @@
 const CreateDishUseCase = require("../useCases/create-dish-useCase");
 const FindDishByIdUseCase = require("../useCases/find-dish-by-id-useCase");
+const UpdateDishUseCase = require("../useCases/update-dish-useCase");
 const DeleteDishUseCase = require("../useCases/delete-dish-useCase");
 
 const AppError = require("../utils/AppError");
@@ -45,6 +46,34 @@ class DishesController {
       return reply.status(200).json({
         dish,
       });
+    }
+    catch (error) {
+      if (error instanceof AppError) {
+        return reply.status(error.statusCode).json({
+          status: "Error",
+          message: error.message,
+        });
+      };
+
+      console.error("🚨 Error on: ", error);
+
+      return reply.status(500).send({
+        status: "Error",
+        message: "Internal Server Error",
+      });
+    };
+  };
+
+  async update(request, reply) {
+    const { name, description, price, ingredients, category } = request.body;
+    const { dishId } = request.params;
+
+    const updateDishUseCase = new UpdateDishUseCase();
+
+    try {
+      const response = await updateDishUseCase.execute({ name, description, category, price, ingredients }, dishId);
+
+      return reply.status(201).json(response);
     }
     catch (error) {
       if (error instanceof AppError) {
