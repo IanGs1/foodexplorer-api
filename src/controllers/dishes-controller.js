@@ -1,5 +1,6 @@
 const CreateDishUseCase = require("../useCases/create-dish-useCase");
 const FindDishByIdUseCase = require("../useCases/find-dish-by-id-useCase");
+const FindDishByIngredientsUseCase = require("../useCases/find-dish-by-ingredients-useCase");
 const UpdateDishUseCase = require("../useCases/update-dish-useCase");
 const DeleteDishUseCase = require("../useCases/delete-dish-useCase");
 
@@ -46,6 +47,33 @@ class DishesController {
       return reply.status(200).json({
         dish,
       });
+    }
+    catch (error) {
+      if (error instanceof AppError) {
+        return reply.status(error.statusCode).json({
+          status: "Error",
+          message: error.message,
+        });
+      };
+
+      console.error("🚨 Error on: ", error);
+
+      return reply.status(500).send({
+        status: "Error",
+        message: "Internal Server Error",
+      });
+    };
+  };
+
+  async index(request, reply) {
+    const { name: dishName, ingredients } = request.query;
+
+    const findDishByIngredientsUseCase = new FindDishByIngredientsUseCase();
+
+    try {
+      const dishes = await findDishByIngredientsUseCase.execute(ingredients, dishName);
+
+      return reply.status(200).json(dishes);
     }
     catch (error) {
       if (error instanceof AppError) {
